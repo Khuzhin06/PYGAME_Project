@@ -67,8 +67,8 @@ class Art:
         return row, column
 
     def on_click(self, cell):
-        print(cell)
         row, col = cell
+        print(row + 1, col + 1)
         for i in range(7):
             for j in range(7):
                 if row == i or col == j:

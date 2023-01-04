@@ -134,7 +134,7 @@ def draw_text(surf, text, size, x, y):
 
 
 def physic():
-    pygame.display.set_caption('химичка')
+    pygame.display.set_caption('фимичка')
     screen = pygame.display.set_mode(SIZE)
 
     clock = pygame.time.Clock()
@@ -154,8 +154,8 @@ def physic():
             if event.type == TURN_BOARD_EVENT:
                 board.turn_left()
                 TURN_BOARD_TIMER -= 30
-                if TURN_BOARD_TIMER <= 500:
-                    TURN_BOARD_TIMER = 500
+                if TURN_BOARD_TIMER <= 400:
+                    TURN_BOARD_TIMER = 400
                 pygame.time.set_timer(TURN_BOARD_EVENT, TURN_BOARD_TIMER)
 
         keys = pygame.key.get_pressed()
@@ -170,6 +170,7 @@ def physic():
 
         if not board.live:
             running = False
+            print(board.point)
         screen.fill('black')
         # screen.blit(background, background_rect)
         draw_text(screen, str(board.point), 18, WIDTH / 2, 10)
