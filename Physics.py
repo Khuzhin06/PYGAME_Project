@@ -133,8 +133,8 @@ def draw_text(surf, text, size, x, y):
     surf.blit(text_surface, text_rect)
 
 
-def physic():
-    pygame.display.set_caption('фимичка')
+def biolog():
+    pygame.display.set_caption('биолог')
     screen = pygame.display.set_mode(SIZE)
 
     clock = pygame.time.Clock()
@@ -181,5 +181,5 @@ def physic():
 
 if __name__ == '__main__':
     pygame.init()
-    physic()
+    biolog()
     pygame.quit()
