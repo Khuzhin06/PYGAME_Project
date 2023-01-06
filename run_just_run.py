@@ -1,8 +1,10 @@
+import random
+
 import pygame
 import sys, os
 
 FPS = 50
-SIZE = WIDTH, HEIGHT = 768, 768
+SIZE = WIDTH, HEIGHT = 704, 768
 pygame.init()
 screen = pygame.display.set_mode(SIZE)
 clock = pygame.time.Clock()
@@ -10,7 +12,7 @@ all_sprites = pygame.sprite.Group()
 tiles_group = pygame.sprite.Group()
 player_group = pygame.sprite.Group()
 # основной персонаж
-player = level = None
+player = level = enemy = None
 
 
 def terminate():
@@ -36,13 +38,16 @@ def load_image(name, colorkey=None):
 
 
 tile_images = {
-    'wall': load_image('desk.png'),
-    'empty': load_image('floor.png')
+    'floor': load_image('desk1.png'),
+    'wall1': load_image('wall4.png'),
+    'door': load_image('door.png'),
+    'wall': load_image('walling.png'),
+    'empty': load_image('floor1.png')
 }
-player_image = load_image('mar.png')
-enemy_image = load_image('enemy.png')
+player_image = load_image('Vova.png')
+enemy_image = load_image('enemy1.png')
 
-tile_width = tile_height = 128
+tile_width = tile_height = 64
 
 
 class Tile(pygame.sprite.Sprite):
@@ -90,26 +95,35 @@ def get_level_tile(row, col):
 
 def player_move(keys, txt, player):
     row, col = player.pos_y, player.pos_x
-    if keys[pygame.K_LEFT] or keys[pygame.K_a]:
+    if keys == 'left':
         if get_level_tile(row, col - 1) == '.':
             level[row][col] = '.'
             level[row][col - 1] = txt
             player.pos_x -= 1
-    elif keys[pygame.K_UP] or keys[pygame.K_w]:
+        if get_level_tile(row, col - 1) == ']' or get_level_tile(row, col - 1) == 'H':
+            return get_level_tile(row, col - 1)
+    elif keys == 'up':
         if get_level_tile(row - 1, col) == '.':
             level[row][col] = '.'
             level[row - 1][col] = txt
             player.pos_y -= 1
-    elif keys[pygame.K_DOWN] or keys[pygame.K_s]:
+        if get_level_tile(row - 1, col) == ']' or get_level_tile(row - 1, col) == 'H':
+            return get_level_tile(row - 1, col)
+    elif keys == 'down':
         if get_level_tile(row + 1, col) == '.':
             level[row][col] = '.'
             level[row + 1][col] = txt
             player.pos_y += 1
-    elif keys[pygame.K_RIGHT] or keys[pygame.K_d]:
+        if get_level_tile(row + 1, col) == ']' or get_level_tile(row + 1, col) == 'H':
+            return get_level_tile(row + 1, col)
+    elif keys == 'right':
         if get_level_tile(row, col + 1) == '.':
             level[row][col] = '.'
             level[row][col + 1] = txt
             player.pos_x += 1
+        if get_level_tile(row, col + 1) == ']' or get_level_tile(row, col + 1) == 'H':
+            return get_level_tile(row, col + 1)
+    return False
 
 
 def load_level(filename):
@@ -128,12 +142,18 @@ def load_level(filename):
 
 def generate_level(level):
     new_player, x, y = None, None, None
-    playerx, playery = None, None
+    playerx, playery, enemyy, enemyx = None, None, None, None
     for y in range(len(level)):
         for x in range(len(level[y])):
             if level[y][x] == '.':
                 Tile('empty', x, y)
             elif level[y][x] == '#':
+                Tile('floor', x, y)
+            elif level[y][x] == '1':
+                Tile('wall1', x, y)
+            elif level[y][x] == 'H':
+                Tile('door', x, y)
+            elif level[y][x] == 'h':
                 Tile('wall', x, y)
             elif level[y][x] == '@':
                 Tile('empty', x, y)
@@ -184,7 +204,7 @@ def main():
     global player, level, enemy
     level = load_level("map2.txt")
     player, level_x, level_y, enemy, enemy_x, enemy_y = generate_level(level)
-
+    true = 0
     running = True
     while running:
         for event in pygame.event.get():
@@ -193,10 +213,21 @@ def main():
                 break
             if event.type == pygame.KEYDOWN:
                 keys = pygame.key.get_pressed()
-                print(keys)
-                player_move(keys, '@', player)
-                player_move(keys, ']', enemy)
-
+                if keys[pygame.K_LEFT] or keys[pygame.K_a]:
+                    true = player_move('left', '@', player)
+                elif keys[pygame.K_RIGHT] or keys[pygame.K_d]:
+                    true = player_move('right', '@', player)
+                elif keys[pygame.K_UP] or keys[pygame.K_w]:
+                    true = player_move('up', '@', player)
+                elif keys[pygame.K_DOWN] or keys[pygame.K_s]:
+                    true = player_move('down', '@', player)
+                if true == ']':
+                    print('bye')
+                    return False
+                if true == 'H':
+                    print('win')
+                    return True
+                player_move(random.choice(['up', 'down', 'right', 'left']), ']', enemy)
 
         screen.fill('white')
         all_sprites.draw(screen)
