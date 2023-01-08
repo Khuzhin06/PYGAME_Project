@@ -1,5 +1,3 @@
-import random
-
 import pygame
 import sys, os
 
@@ -95,7 +93,9 @@ def get_level_tile(row, col):
 
 def player_move(keys, txt, player):
     row, col = player.pos_y, player.pos_x
-    if keys == 'left':
+    if keys == 'lose':
+        return '['
+    elif keys == 'left':
         if get_level_tile(row, col - 1) == '.':
             level[row][col] = '.'
             level[row][col - 1] = txt
@@ -170,6 +170,24 @@ def generate_level(level):
     return new_player, x, y, enemy, enemyx, enemyy
 
 
+def enemy_move(enemy, player):
+    if (abs(enemy.pos_x - player.pos_x) == 1 and abs(enemy.pos_y - player.pos_y) == 0) or \
+            (abs(enemy.pos_x - player.pos_x) == 0 and abs(enemy.pos_y - player.pos_y) == 1) or \
+            (abs(enemy.pos_x - player.pos_x) == 1 and abs(enemy.pos_y - player.pos_y) == 1):
+        return 'lose'
+    if enemy.pos_x < player.pos_x and get_level_tile(enemy.pos_y, enemy.pos_x + 1) == '.':
+        return 'right'
+    if enemy.pos_y > player.pos_y and (
+            get_level_tile(enemy.pos_y - 1, enemy.pos_x) == '.' or get_level_tile(enemy.pos_y - 1, enemy.pos_x) == '@'):
+        return 'up'
+    if enemy.pos_y < player.pos_y and (
+            get_level_tile(enemy.pos_y + 1, enemy.pos_x) == '.' or get_level_tile(enemy.pos_y + 1, enemy.pos_x) == '@'):
+        return 'down'
+    if enemy.pos_x > player.pos_x and (
+            get_level_tile(enemy.pos_y, enemy.pos_x - 1) == '.' or get_level_tile(enemy.pos_y, enemy.pos_x - 1) == '@'):
+        return 'left'
+
+
 def start_screen():
     intro_text = ["ЗАСТАВКА", "",
                   "Правила игры",
@@ -221,14 +239,16 @@ def main():
                     true = player_move('up', '@', player)
                 elif keys[pygame.K_DOWN] or keys[pygame.K_s]:
                     true = player_move('down', '@', player)
+                false = player_move(enemy_move(enemy, player), ']', enemy)
                 if true == ']':
                     print('bye')
                     return False
                 if true == 'H':
                     print('win')
                     return True
-                player_move(random.choice(['up', 'down', 'right', 'left']), ']', enemy)
-
+                if false == '[':
+                    print('bye')
+                    return False
         screen.fill('white')
         all_sprites.draw(screen)
         all_sprites.update()
