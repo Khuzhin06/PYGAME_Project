@@ -166,7 +166,7 @@ def physic(w1, h1, k, name, position):
     # счетчик
     counter = 0
 
-    pygame.display.set_caption('химичка')
+    pygame.display.set_caption('физичка')
     screen = pygame.display.set_mode(SIZE)
 
     clock = pygame.time.Clock()
