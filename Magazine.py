@@ -253,6 +253,11 @@ def magazine():
         with open('coins.txt', mode='r', encoding="utf8") as file:
             for line in file:
                 coins = line
+        with open('characters.txt', mode='r', encoding="utf8") as file:
+            char = file.readlines()
+            if not char:
+                char = ['']
+            print(char)
         screen.fill('black')
         draw_text(screen, '1)Артур: 1500 очков', 13, 80, 155)
         draw_text(screen, '2)Елисей: 1500 очков', 13, 215, 158)
@@ -275,6 +280,16 @@ def magazine():
             PURCHASES[4] = True
         if keys[pygame.K_6]:
             PURCHASES[5] = True
+        for i in range(6):
+            if PURCHASES[i] == True:
+                if str(i) not in char[0]:
+                    if int(coins) >= 1500:
+                        with open('characters.txt', mode='a', encoding="utf8") as file:
+                            file.write(str(i))
+                        with open('coins.txt', mode='w', encoding="utf8") as file:
+                            file.write(str(int(coins) - 250))
+                            file.close()
+                    PURCHASES[i] = False
         magazine_group.draw(screen)
         pygame.display.flip()
         clock.tick(FPS)
