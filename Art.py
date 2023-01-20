@@ -1,5 +1,10 @@
 import pygame
 
+file = 'artmusic.mp3'
+pygame.init()
+pygame.mixer.init()
+pygame.mixer.music.load(file)
+pygame.mixer.music.play()
 FPS = 50
 SIZE = WIDTH, HEIGHT = 560, 610
 FONT_NAME = pygame.font.match_font('arial')
@@ -67,8 +72,8 @@ class Art:
         return row, column
 
     def on_click(self, cell):
+        print(cell)
         row, col = cell
-        print(row + 1, col + 1)
         for i in range(7):
             for j in range(7):
                 if row == i or col == j:

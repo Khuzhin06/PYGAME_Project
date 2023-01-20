@@ -186,6 +186,10 @@ def enemy_move(enemy, player):
     if enemy.pos_x > player.pos_x and (
             get_level_tile(enemy.pos_y, enemy.pos_x - 1) == '.' or get_level_tile(enemy.pos_y, enemy.pos_x - 1) == '@'):
         return 'left'
+    if enemy.pos_x == player.pos_x:
+        return 'left'
+    if enemy.pos_y == player.pos_y:
+        return 'up'
 
 
 def start_screen():
@@ -240,15 +244,12 @@ def main():
                 elif keys[pygame.K_DOWN] or keys[pygame.K_s]:
                     true = player_move('down', '@', player)
                 false = player_move(enemy_move(enemy, player), ']', enemy)
-                if true == ']':
+                if true == ']' or false == '[':
                     print('bye')
                     return False
                 if true == 'H':
                     print('win')
                     return True
-                if false == '[':
-                    print('bye')
-                    return False
         screen.fill('white')
         all_sprites.draw(screen)
         all_sprites.update()

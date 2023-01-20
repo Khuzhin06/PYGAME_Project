@@ -1,9 +1,19 @@
+import sys
+
 import pygame
+from pygame.constants import QUIT, K_ESCAPE, KEYDOWN
 from random import choice
 
+file = 'gimnastica.mp3'
+pygame.init()
+pygame.mixer.init()
+pygame.mixer.music.load(file)
+pygame.mixer.music.play()
 FPS = 50  # количество кадров в секунду
 SIZE = WIDTH, HEIGHT = 800, 400
 FONT_NAME = pygame.font.match_font('arial')
+pygame.init()
+screen = pygame.display.set_mode(SIZE)
 
 
 class Physic:
@@ -32,7 +42,7 @@ class Physic:
             col = (x - self.left) // self.cell_size
             pygame.draw.rect(
                 screen,
-                'white',
+                'black',
                 (x, 320, self.cell_size, self.cell_size),
                 width=1
             )
@@ -127,14 +137,36 @@ class Physic:
 
 def draw_text(surf, text, size, x, y):
     font = pygame.font.Font(FONT_NAME, size)
-    text_surface = font.render(text, True, 'WHITE')
+    text_surface = font.render(text, True, 'BLACK')
     text_rect = text_surface.get_rect()
     text_rect.midtop = (x, y)
     surf.blit(text_surface, text_rect)
 
 
-def biolog():
-    pygame.display.set_caption('биолог')
+def physic(w1, h1, k, name, position):
+    # список для хранения кадров и таймер
+    frames = []
+    sprite = pygame.image.load("kostic 2.0.png".format(name)).convert_alpha()
+    # находим длину, ширину изображения и размеры каждого кадра
+    width, height = sprite.get_size()
+    w, h = width / w1, height / h1
+
+    # счетчик положения кадра на изображении
+    row = 0
+
+    # итерация по строкам
+    for j in range(int(height / h)):
+        # производим итерацию по элементам строки
+        for i in range(int(width / w)):
+            # добавляем  в список отдельные кадры
+            frames.append(sprite.subsurface(pygame.Rect(i * w, row, w, h)))
+        # смещаемся на высоту кадра, т.е. переходим на другую строку
+        row += int(h)
+
+    # счетчик
+    counter = 0
+
+    pygame.display.set_caption('физичка')
     screen = pygame.display.set_mode(SIZE)
 
     clock = pygame.time.Clock()
@@ -146,6 +178,7 @@ def biolog():
     TURN_BOARD_EVENT = pygame.USEREVENT + 1
     TURN_BOARD_TIMER = 1000
     pygame.time.set_timer(TURN_BOARD_EVENT, TURN_BOARD_TIMER)
+    count = 0
     while running:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -154,9 +187,11 @@ def biolog():
             if event.type == TURN_BOARD_EVENT:
                 board.turn_left()
                 TURN_BOARD_TIMER -= 30
-                if TURN_BOARD_TIMER <= 400:
-                    TURN_BOARD_TIMER = 400
+                if TURN_BOARD_TIMER <= 500:
+                    TURN_BOARD_TIMER = 500
                 pygame.time.set_timer(TURN_BOARD_EVENT, TURN_BOARD_TIMER)
+            if event.type == QUIT or (event.type == KEYDOWN and event.key == K_ESCAPE):
+                sys.exit()
 
         keys = pygame.key.get_pressed()
         if keys[pygame.K_LEFT] or keys[pygame.K_a]:
@@ -170,16 +205,19 @@ def biolog():
 
         if not board.live:
             running = False
-            print(board.point)
-        screen.fill('black')
-        # screen.blit(background, background_rect)
+        screen.fill('white')
+        count += 1
+        if count % 5 == 0:
+            counter = (counter + 1) % k
+        screen.blit(frames[counter], position)
         draw_text(screen, str(board.point), 18, WIDTH / 2, 10)
         board.render(screen)
+        pygame.display.update()
         pygame.display.flip()
         clock.tick(FPS)
 
 
 if __name__ == '__main__':
     pygame.init()
-    biolog()
+    physic(4, 3, 12, "image", (300, 100))
     pygame.quit()
