@@ -1,6 +1,7 @@
 import pygame
 from Physics import physic
-file = 'artmusic.mp3'
+from dop_def import money
+file = 'music/artmusic.mp3'
 pygame.init()
 pygame.mixer.init()
 FPS = 50
@@ -113,6 +114,7 @@ def art():
                     board.get_click(event.pos)
         if board.win:
             running = False
+            money(500)
             physic()
         screen.fill('black')
         draw_text(screen, str('Заполните поле полностью белым'), 35, WIDTH / 2, 570)

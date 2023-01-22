@@ -1,7 +1,6 @@
 import pygame
 from Magazine import magazine
-from dop_def import load_image, terminate
-from Art import art
+from dop_def import load_image, terminate, money, who_now
 FPS = 50
 SIZE = WIDTH, HEIGHT = 768, 768
 pygame.init()
@@ -24,7 +23,7 @@ tile_images = {
     'window': load_image('window.png'),
     'empty': load_image('floor1.png')
 }
-player_image = load_image('Vova.png')
+player_image = load_image(who_now())
 enemy_image = load_image('enemy1.png')
 gor_image = load_image('gorshock.png')
 
@@ -240,8 +239,8 @@ def start_screen():
 
 
 def main():
-    global player, level, enemy
-    level = load_level("map2.txt")
+    global player, level, enemy, player_image
+    level = load_level("map22.txt")
     player, level_x, level_y, enemy, enemy_x, enemy_y, gor, gorx, gory = generate_level(level)
     true = 0
     running = True
@@ -266,6 +265,9 @@ def main():
                     return False
                 if true == 'H':
                     print('win')
+                    money(500)
+                    if gor.fall:
+                        money(500)
                     eval('art()')
                     # return True
         screen.fill('white')

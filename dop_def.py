@@ -23,3 +23,26 @@ def load_image(name, colorkey=None):
     else:
         image = image.convert_alpha()
     return image
+
+
+def money(skoko):
+    with open('coins.txt', mode='r', encoding="utf8") as file:
+        for line in file:
+            coins = line
+    with open('coins.txt', mode='w', encoding="utf8") as file:
+        file.write(str(int(coins) + skoko))
+        file.close()
+
+
+hero = {'1': 'kolya1.png',
+        '2': 'elisey1.png',
+        '3': 'genka1.png',
+        '4': 'artur1.png',
+        '5': 'leha1.png',
+        '6': 'Vova1.png'}
+
+
+def who_now():
+    with open('who.txt', mode='r', encoding="utf8") as file:
+        for line in file:
+            return hero[line]

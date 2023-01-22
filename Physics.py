@@ -3,8 +3,9 @@ import sys
 import pygame
 from pygame.constants import QUIT, K_ESCAPE, KEYDOWN
 from random import choice
+from dop_def import money
 
-file = 'gimnastica.mp3'
+file = 'music/gimnastica.mp3'
 pygame.init()
 pygame.mixer.init()
 FPS = 50  # количество кадров в секунду
@@ -213,6 +214,7 @@ def physic():
             running = False
             if board.point >= 500:
                 print('You win')
+            money(board.point)
 
         screen.fill('white')
         count += 1

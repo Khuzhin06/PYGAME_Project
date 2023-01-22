@@ -38,6 +38,12 @@ def load_magazine(name, pngname, corx, cory):
     name.rect.y = cory
 
 
+def who(who):
+    with open('who.txt', mode='w', encoding="utf8") as file:
+        file.write(who)
+        file.close()
+
+
 def magazine():
     artur = elisey = genka = kolya = leha = Vovan = 0
     pngnames = ["artur.png", "elisey.png", "genka.png", "kolya.png", "leha.png", 'Vovan.png']
@@ -86,16 +92,22 @@ def magazine():
         keys = pygame.key.get_pressed()
         if keys[pygame.K_1]:
             PURCHASES[0] = True
+            who('1')
         if keys[pygame.K_2]:
             PURCHASES[1] = True
+            who('2')
         if keys[pygame.K_3]:
             PURCHASES[2] = True
+            who('3')
         if keys[pygame.K_4]:
             PURCHASES[3] = True
+            who('4')
         if keys[pygame.K_5]:
             PURCHASES[4] = True
+            who('5')
         if keys[pygame.K_6]:
             PURCHASES[5] = True
+            who('6')
         for i in range(6):
             if PURCHASES[i] == True:
                 if str(i) not in char[0]:
@@ -103,7 +115,7 @@ def magazine():
                         with open('characters.txt', mode='a', encoding="utf8") as file:
                             file.write(str(i))
                         with open('coins.txt', mode='w', encoding="utf8") as file:
-                            file.write(str(int(coins) - 250))
+                            file.write(str(int(coins) - 1500))
                             file.close()
                     PURCHASES[i] = False
         magazine_group.draw(screen)
