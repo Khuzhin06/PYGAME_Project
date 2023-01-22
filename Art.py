@@ -1,10 +1,8 @@
 import pygame
-
+from Physics import physic
 file = 'artmusic.mp3'
 pygame.init()
 pygame.mixer.init()
-pygame.mixer.music.load(file)
-pygame.mixer.music.play()
 FPS = 50
 SIZE = WIDTH, HEIGHT = 560, 610
 FONT_NAME = pygame.font.match_font('arial')
@@ -96,6 +94,8 @@ def draw_text(surf, text, size, x, y):
 def art():
     pygame.display.set_caption('художник')
     screen = pygame.display.set_mode(SIZE)
+    pygame.mixer.music.load(file)
+    pygame.mixer.music.play()
 
     clock = pygame.time.Clock()
     running = True
@@ -113,6 +113,7 @@ def art():
                     board.get_click(event.pos)
         if board.win:
             running = False
+            physic()
         screen.fill('black')
         draw_text(screen, str('Заполните поле полностью белым'), 35, WIDTH / 2, 570)
         board.render(screen)

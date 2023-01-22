@@ -7,8 +7,6 @@ from random import choice
 file = 'gimnastica.mp3'
 pygame.init()
 pygame.mixer.init()
-pygame.mixer.music.load(file)
-pygame.mixer.music.play()
 FPS = 50  # количество кадров в секунду
 SIZE = WIDTH, HEIGHT = 800, 400
 FONT_NAME = pygame.font.match_font('arial')
@@ -43,6 +41,11 @@ class Physic:
             pygame.draw.rect(
                 screen,
                 'black',
+                (x, 320, self.cell_size, self.cell_size)
+            )
+            pygame.draw.rect(
+                screen,
+                'grey',
                 (x, 320, self.cell_size, self.cell_size),
                 width=1
             )
@@ -143,10 +146,13 @@ def draw_text(surf, text, size, x, y):
     surf.blit(text_surface, text_rect)
 
 
-def physic(w1, h1, k, name, position):
+def physic():
     # список для хранения кадров и таймер
+    w1, h1, k, name, position = 4, 3, 12, "image", (300, 100)
     frames = []
     sprite = pygame.image.load("kostic 2.0.png".format(name)).convert_alpha()
+    pygame.mixer.music.load(file)
+    pygame.mixer.music.play()
     # находим длину, ширину изображения и размеры каждого кадра
     width, height = sprite.get_size()
     w, h = width / w1, height / h1
@@ -205,6 +211,9 @@ def physic(w1, h1, k, name, position):
 
         if not board.live:
             running = False
+            if board.point >= 500:
+                print('You win')
+
         screen.fill('white')
         count += 1
         if count % 5 == 0:
@@ -219,5 +228,5 @@ def physic(w1, h1, k, name, position):
 
 if __name__ == '__main__':
     pygame.init()
-    physic(4, 3, 12, "image", (300, 100))
+    physic()
     pygame.quit()

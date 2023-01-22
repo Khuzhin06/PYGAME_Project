@@ -1,8 +1,9 @@
 import pygame
-import sys, os
-
+from Magazine import magazine
+from dop_def import load_image, terminate
+from Art import art
 FPS = 50
-SIZE = WIDTH, HEIGHT = 704, 768
+SIZE = WIDTH, HEIGHT = 768, 768
 pygame.init()
 screen = pygame.display.set_mode(SIZE)
 clock = pygame.time.Clock()
@@ -13,37 +14,19 @@ player_group = pygame.sprite.Group()
 player = level = enemy = None
 
 
-def terminate():
-    pygame.quit()
-    sys.exit()
-
-
-def load_image(name, colorkey=None):
-    fullname = os.path.join('images', name)
-    # если файл не существует, то выходим
-    if not os.path.isfile(fullname):
-        print(f"Файл с изображением '{fullname}' не найден")
-        sys.exit()
-    image = pygame.image.load(fullname)
-    if colorkey is not None:
-        image = image.convert()
-        if colorkey == -1:
-            colorkey = image.get_at((0, 0))
-        image.set_colorkey(colorkey)
-    else:
-        image = image.convert_alpha()
-    return image
-
-
 tile_images = {
     'floor': load_image('desk1.png'),
+    'sky': load_image('sky1.png'),
     'wall1': load_image('wall4.png'),
     'door': load_image('door.png'),
     'wall': load_image('walling.png'),
+    'gor': load_image('gorshock.png'),
+    'window': load_image('window.png'),
     'empty': load_image('floor1.png')
 }
 player_image = load_image('Vova.png')
 enemy_image = load_image('enemy1.png')
+gor_image = load_image('gorshock.png')
 
 tile_width = tile_height = 64
 
@@ -63,11 +46,11 @@ class Player(pygame.sprite.Sprite):
         self.pos_x = pos_x
         self.pos_y = pos_y
         self.rect = self.image.get_rect().move(
-            tile_width * pos_x + 15, tile_height * pos_y + 5)
+            tile_width * pos_x, tile_height * pos_y)
 
     def update(self):
         self.rect = self.image.get_rect().move(
-            tile_width * self.pos_x + 15, tile_height * self.pos_y + 5)
+            tile_width * self.pos_x, tile_height * self.pos_y)
 
 
 class Enemy(pygame.sprite.Sprite):
@@ -77,11 +60,29 @@ class Enemy(pygame.sprite.Sprite):
         self.pos_x = pos_x
         self.pos_y = pos_y
         self.rect = self.image.get_rect().move(
-            tile_width * pos_x + 15, tile_height * pos_y + 5)
+            tile_width * pos_x, tile_height * pos_y)
 
     def update(self):
         self.rect = self.image.get_rect().move(
-            tile_width * self.pos_x + 15, tile_height * self.pos_y + 5)
+            tile_width * self.pos_x, tile_height * self.pos_y)
+
+
+class Gorchock(pygame.sprite.Sprite):
+    def __init__(self, pos_x, pos_y):
+        super().__init__(player_group, all_sprites)
+        self.image = gor_image
+        self.pos_x = pos_x
+        self.pos_y = pos_y
+        self.fall = False
+        self.rect = self.image.get_rect().move(
+            tile_width * pos_x, tile_height * pos_y)
+
+    def update(self):
+        self.rect = self.image.get_rect().move(
+            tile_width * self.pos_x, tile_height * self.pos_y)
+        if self.fall:
+            self.pos_y += 1
+
 
 
 def get_level_tile(row, col):
@@ -91,7 +92,7 @@ def get_level_tile(row, col):
     return None
 
 
-def player_move(keys, txt, player):
+def player_move(keys, txt, player, gor):
     row, col = player.pos_y, player.pos_x
     if keys == 'lose':
         return '['
@@ -102,6 +103,9 @@ def player_move(keys, txt, player):
             player.pos_x -= 1
         if get_level_tile(row, col - 1) == ']' or get_level_tile(row, col - 1) == 'H':
             return get_level_tile(row, col - 1)
+        if get_level_tile(row, col - 1) == '7':
+            gor.pos_x -= 1
+            gor.fall = True
     elif keys == 'up':
         if get_level_tile(row - 1, col) == '.':
             level[row][col] = '.'
@@ -147,10 +151,14 @@ def generate_level(level):
         for x in range(len(level[y])):
             if level[y][x] == '.':
                 Tile('empty', x, y)
+            if level[y][x] == '4':
+                Tile('sky', x, y)
             elif level[y][x] == '#':
                 Tile('floor', x, y)
             elif level[y][x] == '1':
                 Tile('wall1', x, y)
+            elif level[y][x] == '2':
+                Tile('window', x, y)
             elif level[y][x] == 'H':
                 Tile('door', x, y)
             elif level[y][x] == 'h':
@@ -161,13 +169,18 @@ def generate_level(level):
             elif level[y][x] == ']':
                 Tile('empty', x, y)
                 enemyx, enemyy = x, y
+            elif level[y][x] == '7':
+                Tile('window', x, y)
+                gorx, gory = x, y
 
     if playerx and playery:
         new_player = Player(playerx, playery)
     if enemyy and enemyx:
         enemy = Enemy(enemyx, enemyy)
+    if gorx and gory:
+        gor = Gorchock(gorx, gory)
     # вернем игрока, а также размер поля в клетках
-    return new_player, x, y, enemy, enemyx, enemyy
+    return new_player, x, y, enemy, enemyx, enemyy, gor, gorx, gory
 
 
 def enemy_move(enemy, player):
@@ -193,10 +206,12 @@ def enemy_move(enemy, player):
 
 
 def start_screen():
-    intro_text = ["ЗАСТАВКА", "",
-                  "Правила игры",
-                  "Если в правилах несколько строк,",
-                  "приходится выводить их построчно"]
+    intro_text = ["СБЕЖАТЬ ИЗ ШКОЛЫ",
+                  "171 Edition",
+                  "",
+                  "Правила игры:",
+                  "Нажмите на любую клавишу на клавиатуре, чтобы начать игру",
+                  "Нажмите на любую клавишу на мышке, чтобы открыть магазин"]
 
     fon = pygame.transform.scale(load_image('fon.jpg'), (WIDTH, HEIGHT))
     screen.blit(fon, (0, 0))
@@ -215,9 +230,11 @@ def start_screen():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 terminate()
-            elif event.type == pygame.KEYDOWN or \
-                    event.type == pygame.MOUSEBUTTONDOWN:
-                return  # начинаем игру
+            elif event.type == pygame.KEYDOWN:
+                main()
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                magazine()
+                main()
         pygame.display.flip()
         clock.tick(FPS)
 
@@ -225,7 +242,7 @@ def start_screen():
 def main():
     global player, level, enemy
     level = load_level("map2.txt")
-    player, level_x, level_y, enemy, enemy_x, enemy_y = generate_level(level)
+    player, level_x, level_y, enemy, enemy_x, enemy_y, gor, gorx, gory = generate_level(level)
     true = 0
     running = True
     while running:
@@ -236,20 +253,21 @@ def main():
             if event.type == pygame.KEYDOWN:
                 keys = pygame.key.get_pressed()
                 if keys[pygame.K_LEFT] or keys[pygame.K_a]:
-                    true = player_move('left', '@', player)
+                    true = player_move('left', '@', player, gor)
                 elif keys[pygame.K_RIGHT] or keys[pygame.K_d]:
-                    true = player_move('right', '@', player)
+                    true = player_move('right', '@', player, gor)
                 elif keys[pygame.K_UP] or keys[pygame.K_w]:
-                    true = player_move('up', '@', player)
+                    true = player_move('up', '@', player, gor)
                 elif keys[pygame.K_DOWN] or keys[pygame.K_s]:
-                    true = player_move('down', '@', player)
-                false = player_move(enemy_move(enemy, player), ']', enemy)
+                    true = player_move('down', '@', player, gor)
+                false = player_move(enemy_move(enemy, player), ']', enemy, gor)
                 if true == ']' or false == '[':
                     print('bye')
                     return False
                 if true == 'H':
                     print('win')
-                    return True
+                    eval('art()')
+                    # return True
         screen.fill('white')
         all_sprites.draw(screen)
         all_sprites.update()
@@ -259,5 +277,4 @@ def main():
 
 if __name__ == '__main__':
     start_screen()
-    main()
     terminate()
