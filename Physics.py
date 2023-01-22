@@ -150,7 +150,7 @@ def physic():
     # список для хранения кадров и таймер
     w1, h1, k, name, position = 4, 3, 12, "image", (300, 100)
     frames = []
-    sprite = pygame.image.load("kostic 2.0.png".format(name)).convert_alpha()
+    sprite = pygame.image.load("images/kostic 2.0.png".format(name)).convert_alpha()
     pygame.mixer.music.load(file)
     pygame.mixer.music.play()
     # находим длину, ширину изображения и размеры каждого кадра
