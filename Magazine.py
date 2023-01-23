@@ -178,10 +178,10 @@ def start_screen():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 terminate()
-            elif event.type == pygame.KEYDOWN:
-                main()
-            elif event.type == pygame.MOUSEBUTTONDOWN:
-                magazine()
+            # elif event.type == pygame.KEYDOWN:
+            #     main()
+            # elif event.type == pygame.MOUSEBUTTONDOWN:
+            #     magazine()
         pygame.display.flip()
         clock.tick(FPS)
 
