@@ -9,7 +9,7 @@ file = 'music/gimnastica.mp3'
 pygame.init()
 pygame.mixer.init()
 FPS = 50  # количество кадров в секунду
-SIZE = WIDTH, HEIGHT = 800, 400
+SIZE = WIDTH, HEIGHT = 800, 768
 FONT_NAME = pygame.font.match_font('arial')
 pygame.init()
 screen = pygame.display.set_mode(SIZE)
@@ -114,13 +114,13 @@ class Physic:
                 pygame.draw.rect(
                     screen,
                     'green',
-                    (x, 320, 80, 80),
+                    (x, 400, 800, 800),
                 )
             elif self.board[col] == 'No':
                 pygame.draw.rect(
                     screen,
                     'red',
-                    (x, 320, 80, 80),
+                    (x, 400, 800, 800),
                 )
 
     def turn_left(self):

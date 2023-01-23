@@ -46,7 +46,7 @@ def who(who):
 
 def magazine():
     artur = elisey = genka = kolya = leha = Vovan = 0
-    pngnames = ["artur.png", "elisey.png", "genka.png", "kolya.png", "leha.png", 'Vovan.png']
+    pngnames = ["kolya.png", "elisey.png", "genka.png", "artur.png", "leha.png", 'Vovan.png']
     names = [artur, elisey, genka, kolya, leha, Vovan]
     x = 0
     n = 0
@@ -87,8 +87,8 @@ def magazine():
         draw_text(screen, '4)Колян: 1500 очков', 13, 80, 310)
         draw_text(screen, '5)Лёха: 1500 очков', 13, 215, 310)
         draw_text(screen, '6)Вован: 1500 очков', 13, 350, 310)
-        draw_text(screen, 'Количество очков:' + coins, 20, WIDTH - 650, HEIGHT - 75)
-        draw_text(screen, 'Нажмите на цифру 1-6, чтобы купить нужного вам персонажа.', 20, 260, HEIGHT - 50)
+        draw_text(screen, 'Количество очков:' + coins, 20, WIDTH - 650, HEIGHT - 115)
+        draw_text(screen, 'Нажмите на цифру 1-6, чтобы купить нужного вам персонажа.', 20, 260, HEIGHT - 95)
         keys = pygame.key.get_pressed()
         if keys[pygame.K_1]:
             PURCHASES[0] = True

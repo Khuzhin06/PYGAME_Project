@@ -1,5 +1,4 @@
 import pygame
-from Magazine import magazine
 from dop_def import load_image, terminate, money, who_now
 FPS = 50
 SIZE = WIDTH, HEIGHT = 768, 768
@@ -23,7 +22,6 @@ tile_images = {
     'window': load_image('window.png'),
     'empty': load_image('floor1.png')
 }
-player_image = load_image(who_now())
 enemy_image = load_image('enemy1.png')
 gor_image = load_image('gorshock.png')
 
@@ -41,6 +39,7 @@ class Tile(pygame.sprite.Sprite):
 class Player(pygame.sprite.Sprite):
     def __init__(self, pos_x, pos_y):
         super().__init__(player_group, all_sprites)
+        player_image = load_image(who_now(1))
         self.image = player_image
         self.pos_x = pos_x
         self.pos_y = pos_y
@@ -204,41 +203,7 @@ def enemy_move(enemy, player):
         return 'up'
 
 
-def start_screen():
-    intro_text = ["СБЕЖАТЬ ИЗ ШКОЛЫ",
-                  "171 Edition",
-                  "",
-                  "Правила игры:",
-                  "Нажмите на любую клавишу на клавиатуре, чтобы начать игру",
-                  "Нажмите на любую клавишу на мышке, чтобы открыть магазин"]
-
-    fon = pygame.transform.scale(load_image('fon.jpg'), (WIDTH, HEIGHT))
-    screen.blit(fon, (0, 0))
-    font = pygame.font.Font(None, 30)
-    text_coord = 50
-    for line in intro_text:
-        string_rendered = font.render(line, 5, pygame.Color('black'))
-        intro_rect = string_rendered.get_rect()
-        text_coord += 10
-        intro_rect.top = text_coord
-        intro_rect.x = 10
-        text_coord += intro_rect.height
-        screen.blit(string_rendered, intro_rect)
-
-    while True:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                terminate()
-            elif event.type == pygame.KEYDOWN:
-                main()
-            elif event.type == pygame.MOUSEBUTTONDOWN:
-                magazine()
-                main()
-        pygame.display.flip()
-        clock.tick(FPS)
-
-
-def main():
+def main1():
     global player, level, enemy, player_image
     level = load_level("map22.txt")
     player, level_x, level_y, enemy, enemy_x, enemy_y, gor, gorx, gory = generate_level(level)
@@ -268,7 +233,6 @@ def main():
                     money(500)
                     if gor.fall:
                         money(500)
-                    eval('art()')
                     # return True
         screen.fill('white')
         all_sprites.draw(screen)
@@ -278,5 +242,5 @@ def main():
 
 
 if __name__ == '__main__':
-    start_screen()
+    main1()
     terminate()

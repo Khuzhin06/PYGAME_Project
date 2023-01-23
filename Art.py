@@ -5,7 +5,7 @@ file = 'music/artmusic.mp3'
 pygame.init()
 pygame.mixer.init()
 FPS = 50
-SIZE = WIDTH, HEIGHT = 560, 610
+SIZE = WIDTH, HEIGHT = 768, 768
 FONT_NAME = pygame.font.match_font('arial')
 
 
@@ -115,7 +115,6 @@ def art():
         if board.win:
             running = False
             money(500)
-            physic()
         screen.fill('black')
         draw_text(screen, str('Заполните поле полностью белым'), 35, WIDTH / 2, 570)
         board.render(screen)

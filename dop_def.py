@@ -34,15 +34,25 @@ def money(skoko):
         file.close()
 
 
-hero = {'1': 'kolya1.png',
+hero = {'1': 'artur1.png',
         '2': 'elisey1.png',
         '3': 'genka1.png',
-        '4': 'artur1.png',
+        '4': 'kolya1.png',
         '5': 'leha1.png',
-        '6': 'Vova1.png'}
+        '6': 'Vova.png'}
+
+hero1 = {'1': 'artur2.png',
+         '2': 'elisey2.png',
+         '3': 'genka2.png',
+         '4': 'kolya2.png',
+         '5': 'leha2.png',
+         '6': 'Vova2.png'}
 
 
-def who_now():
+def who_now(q):
     with open('who.txt', mode='r', encoding="utf8") as file:
         for line in file:
-            return hero[line]
+            if q:
+                return hero[line]
+            else:
+                return hero1[line]
