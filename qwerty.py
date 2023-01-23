@@ -9,7 +9,6 @@ clock = pygame.time.Clock()
 all_sprites = pygame.sprite.Group()
 tiles_group = pygame.sprite.Group()
 player_group = pygame.sprite.Group()
-# основной персонаж
 player = level = None
 
 
@@ -28,12 +27,10 @@ class Board:
         self.board = [
             [0] * self.size[0] for _ in range(self.size[1])
         ]
-        # значения по умолчанию
         self.cell_size = 40
         self.left = (WIDTH - (self.cell_size * self.width)) // 2
         self.top = (HEIGHT - (self.cell_size * self.height)) // 2
 
-    # настройка внешнего вида
     def set_view(self, left, top, cell_size):
         self.left = left
         self.top = top
@@ -84,12 +81,11 @@ class Board:
                               self.top + (i[1] - 1) * self.cell_size),
                              (self.left + i[0] * self.cell_size + 80, self.top + (i[1] - 1) * self.cell_size - 20),
                              (self.left + i[0] * self.cell_size + 80, self.top + i[1] * self.cell_size + 20)]
-                # проход(дверь)
+
                 pygame.draw.polygon(screen, 'white',
                                     spots, 0)
 
     def furniture(self, screen):
-        # парты и стулья
         for j in range(0, 9, 3):
             for i in range(0, 10, 2):
                 pygame.draw.rect(screen, 'brown', (200 + (i * self.cell_size), 190 + (j * self.cell_size), 40, 80), 0)
@@ -98,7 +94,6 @@ class Board:
                 pygame.draw.rect(screen, 'brown',
                                  (200 + (i * self.cell_size) - 20, 190 + (j * self.cell_size) + 45, 20, 30), 0)
 
-        # доска на стене
         pygame.draw.polygon(screen, 'green', [(self.width * self.cell_size + self.left + 80, self.top + 80),
                                               (self.width * self.cell_size + self.left + 80, self.top + 320),
                                               (self.width * self.cell_size + self.left + 20, self.top + 320 - 60),
@@ -124,7 +119,7 @@ slovarik = [Board(size=(15, 4),
                   except_cell=((0, 4), (0, 5), (0, 6), (1, 4), (1, 5), (1, 6), (2, 4), (2, 5), (2, 6),
                                (3, 4), (3, 5), (3, 6), (4, 4), (4, 5), (4, 6)))
             ]
-board = [slovarik[5]]
+board = [slovarik[0]]
 
 
 def terminate():
@@ -134,7 +129,6 @@ def terminate():
 
 def load_image(name, colorkey=None):
     fullname = os.path.join('images', name)
-    # если файл не существует, то выходим
     if not os.path.isfile(fullname):
         print(f"Файл с изображением '{fullname}' не найден")
         sys.exit()
@@ -174,7 +168,8 @@ def player_move(keys):
     row, col = player.pos_y, player.pos_x
     if keys[pygame.K_LEFT] or keys[pygame.K_a]:
         if get_level_tile(row, col - 1) == '$':
-            main(slovarik[board[0].exits[((col - 1, row), 4)]])
+            a = slovarik[board[0].exits[((col - 1, row), 4)]]
+            main(a, pl_pos=(a.size[0], row))
         elif get_level_tile(row, col - 1) == '.':
             level[row][col] = '.'
             level[row][col - 1] = '@'
@@ -198,7 +193,7 @@ def player_move(keys):
             player.rect.y += tile_height
     elif keys[pygame.K_RIGHT] or keys[pygame.K_d]:
         if get_level_tile(row, col + 1) == '$':
-            main(slovarik[board[0].exits[((col, row), 2)]])
+            main(slovarik[board[0].exits[((col, row), 2)]], pl_pos=(1, row))
         elif get_level_tile(row, col + 1) == '.':
             level[row][col] = '.'
             level[row][col + 1] = '@'
@@ -208,29 +203,28 @@ def player_move(keys):
 
 def load_level():
     filename = "maps/" + f'map{board[0].map}.txt'
-    # читаем уровень, убирая символы перевода строки
     with open(filename, 'r') as mapFile:
         level_map = [line for line in mapFile]
 
-    # и подсчитываем максимальную длину
-    max_width = max(map(len, level_map))
-
-    # дополняем каждую строку пустыми клетками ('.')
     temp = list(map(lambda x: x, level_map))
     return [list(row) for row in temp]
 
 
-def generate_level(level):
+def generate_level(level, pl_pose=None):
     new_player, x, y = None, None, None
     playerx, playery = None, None
     for y in range(len(level)):
         for x in range(len(level[y])):
             if level[y][x] == '@':
                 playerx, playery = x, y
+                if pl_pose:
+                    print(0)
+                    playerx, playery = pl_pose
+                    level[y][x] = '.'
 
     if playerx and playery:
+        pass
         new_player = Player(playerx, playery)
-    # вернем игрока, а также размер поля в клетках
     return new_player, x, y
 
 
@@ -244,16 +238,16 @@ def start_screen():
                 terminate()
             elif event.type == pygame.KEYDOWN or \
                     event.type == pygame.MOUSEBUTTONDOWN:
-                return  # начинаем игру
+                return
         pygame.display.flip()
         clock.tick(FPS)
 
 
-def main(doska):
+def main(doska, pl_pos=None):
     global player, level, board
     board[0] = doska
     level = load_level()
-    player, level_x, level_y = generate_level(level)
+    player, level_x, level_y = generate_level(level, pl_pos)
 
     running = True
     while running:
@@ -276,5 +270,5 @@ def main(doska):
 
 if __name__ == '__main__':
     start_screen()
-    main(slovarik[5])
+    main(slovarik[0])
     terminate()
